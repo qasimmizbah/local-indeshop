@@ -1,0 +1,133 @@
+Magento 2 Multi-Store Local Setup (WSL + Nginx)
+
+This guide explains how to run multiple Magento 2 websites locally using
+WSL, Nginx, and PHP-FPM.
+
+================================================== Environment
+==================================================
+
+-   Ubuntu (WSL2)
+-   Nginx
+-   PHP 8.2
+-   Magento 2
+-   MySQL
+-   OpenSearch / Elasticsearch
+-   Redis
+
+Magento Path: /var/www/indeshop
+
+Nginx Config: /etc/nginx/sites-available/indeshop
+
+Enabled Site: /etc/nginx/sites-enabled/indeshop
+
+================================================== Step 1 - Verify
+Website Code ==================================================
+
+php bin/magento store:website:list
+
+Example: indeshop_de indeshop_nl dynomighty_eu
+
+================================================== Step 2 - Add Nginx
+Virtual Host ==================================================
+
+Example:
+
+server { listen 80; server_name indeshop.de.local;
+
+    set $MAGE_ROOT /var/www/indeshop;
+    set $MAGE_MODE developer;
+
+    set $MAGE_RUN_TYPE website;
+    set $MAGE_RUN_CODE indeshop_de;
+
+    include /var/www/indeshop/nginx.conf.sample;
+
+}
+
+Only change: - server_name - MAGE_RUN_CODE
+
+================================================== Step 3 - Test Nginx
+==================================================
+
+sudo nginx -t sudo service nginx reload
+
+================================================== Step 4 - Windows
+Hosts File ==================================================
+
+File: C:
+
+Example:
+
+127.0.0.1 indeshop.nl.local 127.0.0.1 indeshop.de.local 127.0.0.1
+dynomighty.eu.local
+
+================================================== Step 5 - WSL Hosts
+(Optional) ==================================================
+
+sudo nano /etc/hosts
+
+127.0.0.1 indeshop.nl.local 127.0.0.1 indeshop.de.local 127.0.0.1
+dynomighty.eu.local
+
+================================================== Step 6 - Check Base
+URL ==================================================
+
+php bin/magento config:show
+–scope=websites
+–scope-code=indeshop_de
+web/unsecure/base_url
+
+================================================== Step 7 - Set Base URL
+==================================================
+
+php bin/magento config:set
+–lock-env
+–scope=websites
+–scope-code=indeshop_de
+web/unsecure/base_url
+http://indeshop.de.local/
+
+php bin/magento config:set
+–lock-env
+–scope=websites
+–scope-code=indeshop_de
+web/secure/base_url
+http://indeshop.de.local/
+
+================================================== Step 8 - Flush Cache
+==================================================
+
+php bin/magento cache:flush
+
+================================================== Step 9 - Test
+==================================================
+
+http://indeshop.de.local
+
+================================================== Useful Commands
+==================================================
+
+php bin/magento store:website:list php bin/magento store:list php
+bin/magento cache:flush
+
+sudo nginx -t sudo service nginx reload sudo service nginx restart
+
+================================================== Workflow for Adding
+New Website ==================================================
+
+1.  Find Website Code
+2.  Add Nginx Server Block
+3.  Reload Nginx
+4.  Update Windows Hosts
+5.  Update WSL Hosts (optional)
+6.  Set Base URL
+7.  Flush Cache
+8.  Test Website
+
+================================================== Example Domains
+==================================================
+
+indeshop.nl.local -> indeshop_nl indeshop.de.local -> indeshop_de
+indeshop.fr.local -> indeshop_fr indeshop.uk.local -> indeshop_uk
+dynomighty.eu.local -> dynomighty_eu dynomighty.nl.local ->
+dynomighty_nl
