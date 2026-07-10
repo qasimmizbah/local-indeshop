@@ -112,6 +112,27 @@ bin/magento cache:flush
 
 sudo nginx -t sudo service nginx reload sudo service nginx restart
 
+
+UPDATE core_config_data
+SET value='http://dynomighty.eu.local/'
+WHERE scope='websites'
+AND scope_id=51
+AND path='web/unsecure/base_link_url';
+
+UPDATE core_config_data
+SET value='http://dynomighty.eu.local/'
+WHERE scope='websites'
+AND scope_id=51
+AND path='web/secure/base_link_url';
+
+UPDATE core_config_data
+SET value=''
+WHERE scope='stores'
+AND scope_id=67
+AND path='web/cookie/cookie_domain';
+
+
+
 ================================================== Workflow for Adding
 New Website ==================================================
 
