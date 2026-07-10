@@ -20,8 +20,7 @@ Nginx Config: /etc/nginx/sites-available/indeshop
 
 Enabled Site: /etc/nginx/sites-enabled/indeshop
 
-================================================== Step 1 - Verify
-Website Code ==================================================
+================================================== Step 1 - Verify Website Code ==================================================
 
 php bin/magento store:website:list
 
@@ -69,6 +68,8 @@ dynomighty.eu.local
 (Optional) ==================================================
 
 sudo nano /etc/hosts
+
+C:\Windows\System32\drivers\etc\hosts
 
 127.0.0.1 indeshop.nl.local 
 127.0.0.1 indeshop.de.local 
@@ -131,7 +132,9 @@ WHERE scope='stores'
 AND scope_id=67
 AND path='web/cookie/cookie_domain';
 
+Last 
 
+import config : php bin/magento app:config:import
 
 ================================================== Workflow for Adding
 New Website ==================================================
