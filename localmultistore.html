@@ -79,20 +79,20 @@ URL ==================================================
 
 php bin/magento config:show
 –scope=websites
-–scope-code=indeshop_de
+–scope-code=dynomighty_eu
 web/unsecure/base_url
 
 ================================================== Step 7 - Set Base URL
 ==================================================
 
-php bin/magento config:set --lock-env --scope=websites --scope-code=indeshop_de web/unsecure/base_url http://indeshop.de.local/
+php bin/magento config:set --lock-env --scope=websites --scope-code=dynomighty_eu web/unsecure/base_url http://dynomighty.eu.local/
 
 php bin/magento config:set \
 --lock-env \
 --scope=websites \
---scope-code=indeshop_de \
+--scope-code=dynomighty_eu \
 web/secure/base_url \
-http://indeshop.de.local/
+http://dynomighty.eu.local/
 
 ================================================== Step 8 - Flush Cache
 ==================================================
