@@ -141,3 +141,9 @@ Zend OPcache
 
 
 qasim@DESKTOP-R6PM68C:/var/www/indeshop$
+
+
+tar -czf magento-files-$(date +%F).tar.gz .
+mysqldump -u root -p database_name > magento-db-$(date +%F).sql
+cp composer.json composer.json.backup
+cp composer.lock composer.lock.backup
