@@ -1,3 +1,30 @@
+http://127.0.0.1/admin_tbs
+
+http://indeshop.nl.local/
+
+#Commands
+sudo systemctl restart php8.2-fpm
+sudo systemctl restart nginx
+tail -20 var/log/exception.log
+tail -20 var/log/system.log
+sudo tail -20 /var/log/nginx/error.log
+
+sudo chgrp -R www-data var
+sudo find var -type d -exec chmod 775 {} \;
+sudo find var -type f -exec chmod 664 {} \;
+
+ls -ld var/cache
+
+sudo chgrp -R www-data generated pub/static pub/media
+sudo chmod -R 775 generated pub/static pub/media
+
+sudo find var -type d -exec chmod 775 {} \;
+sudo find var -type f -exec chmod 664 {} \;
+namei -l /var/www/indeshop/var/cache
+grep "^user =" /etc/php/8.2/fpm/pool.d/www.conf
+grep "^group =" /etc/php/8.2/fpm/pool.d/www.conf
+
+
 # Indeshop Magento Project
 
 ## Project Location
