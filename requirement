@@ -1,0 +1,143 @@
+sudo systemctl restart nginxqasim@DESKTOP-R6PM68C:/var/www/indeshop$
+
+qasim@DESKTOP-R6PM68C:/var/www/indeshop$ php bin/magento --version
+
+Magento CLI 2.4.6-p7
+
+qasim@DESKTOP-R6PM68C:/var/www/indeshop$ php -v
+
+PHP 8.2.32 (cli) (built: Jul  2 2026 14:12:25) (NTS)
+
+Copyright (c) The PHP Group
+
+Zend Engine v4.2.32, Copyright (c) Zend Technologies
+
+    with Zend OPcache v8.2.32, Copyright (c), by Zend Technologies
+
+qasim@DESKTOP-R6PM68C:/var/www/indeshop$ composer --version
+
+Composer version 2.10.1 2026-06-04 10:25:59
+
+PHP version 8.2.32 (/usr/bin/php8.2)
+
+Run the "diagnose" command to get more detailed diagnostics output.
+
+qasim@DESKTOP-R6PM68C:/var/www/indeshop$
+
+Run the "diagnose" command to get more detailed diagnostics output.
+
+qasim@DESKTOP-R6PM68C:/var/www/indeshop$ php -m
+
+[PHP Modules]
+
+bcmath
+
+calendar
+
+Core
+
+ctype
+
+curl
+
+date
+
+dom
+
+exif
+
+FFI
+
+fileinfo
+
+filter
+
+ftp
+
+gd
+
+gettext
+
+hash
+
+iconv
+
+intl
+
+json
+
+libxml
+
+mbstring
+
+mysqli
+
+mysqlnd
+
+openssl
+
+pcntl
+
+pcre
+
+PDO
+
+pdo_mysql
+
+Phar
+
+posix
+
+random
+
+readline
+
+Reflection
+
+session
+
+shmop
+
+SimpleXML
+
+soap
+
+sockets
+
+sodium
+
+SPL
+
+standard
+
+sysvmsg
+
+sysvsem
+
+sysvshm
+
+tokenizer
+
+xml
+
+xmlreader
+
+xmlwriter
+
+xsl
+
+Zend OPcache
+
+zip
+
+zlib
+
+
+
+[Zend Modules]
+
+Zend OPcache
+
+
+
+qasim@DESKTOP-R6PM68C:/var/www/indeshop$
