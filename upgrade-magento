@@ -1,0 +1,286 @@
+Magento 2.4.6-p7 to 2.4.8-p5 Upgrade - Complete Command Overview
+1. Pre-Upgrade Commands
+
+# Check Magento version
+php bin/magento --version
+
+# Check PHP version
+php -v
+
+# Check Composer version
+composer --version
+
+# Check OpenSearch/Elasticsearch
+curl -X GET "localhost:9200/_cluster/health?pretty"
+
+2. Backup Commands
+# Quick code backup (excluding heavy files)
+tar -czf magento_core_backup_$(date +%Y%m%d_%H%M%S).tar.gz \
+  --exclude='pub/media/catalog/product/cache' \
+  --exclude='pub/media/cache' \
+  --exclude='var/cache' \
+  --exclude='var/page_cache' \
+  --exclude='var/session' \
+  --exclude='var/log' \
+  --exclude='*.zip' \
+  --exclude='*.gz' \
+  --exclude='vendor/*/test' \
+  --exclude='vendor/*/tests' \
+  app bin lib pub var vendor composer.json
+
+# Database backup
+mysqldump -u [username] -p[password] [database] --single-transaction --quick --skip-lock-tables | gzip > db_backup_$(date +%Y%m%d_%H%M%S).sql.gz
+
+# Backup composer files
+cp composer.json composer.json.backup
+cp composer.lock composer.lock.backup
+
+3. Enable Maintenance Mode
+php bin/magento maintenance:enable
+
+Composer Update Commands
+4. Update Composer
+# Update composer itself
+composer self-update
+
+# Clear composer cache
+composer clear-cache
+
+5. Update Magento Version
+# Use require-commerce for Magento 2.4.6+
+composer require-commerce magento/product-community-edition 2.4.8-p5 --no-update
+
+# OR manual edit composer.json
+nano composer.json
+# Change: "magento/product-community-edition": "2.4.6-p7" 
+# To: "magento/product-community-edition": "2.4.8-p5"
+
+6. Update Dependencies
+# Full update with all dependencies
+composer update --with-all-dependencies
+
+# If PHP version issues
+composer update --ignore-platform-req=php
+
+# With increased memory
+php -d memory_limit=8G /usr/local/bin/composer update
+
+7. Fix Symfony Version Conflicts
+# Update Symfony packages to 6.4
+composer require symfony/process:^6.4 symfony/finder:^6.4 symfony/console:^6.4 symfony/config:^6.4 symfony/dependency-injection:^6.4 --with-all-dependencies
+
+8. Fix Specific Package Conflicts
+# Update PHPUnit
+composer require phpunit/phpunit:^9.6 --no-update
+
+# Update testing framework
+composer require magento/magento2-functional-testing-framework:^4.4 --dev --no-update
+
+# Update PHP CS Fixer
+composer require friendsofphp/php-cs-fixer:^3.50 --dev --no-update
+
+# Remove problematic packages
+composer remove phpmd/phpmd pdepend/pdepend sebastian/phpcpd --dev --no-update
+
+
+9.  Database Upgrade Commands
+# Main upgrade command
+php bin/magento setup:upgrade
+
+# With increased memory
+php -d memory_limit=8G bin/magento setup:upgrade
+
+# With safe mode
+php -d memory_limit=8G bin/magento setup:upgrade --safe-mode --no-interaction
+
+# With verbose output
+php bin/magento setup:upgrade --verbose
+
+# Separate schema and data upgrade
+php bin/magento setup:db-schema:upgrade --no-interaction
+php bin/magento setup:db-data:upgrade --no-interaction
+
+10.  Fix Stuck Upgrade
+# Remove database locks
+mysql -u [username] -p[password] -e "DELETE FROM [database].flag WHERE flag_code='setup_upgrade_lock';"
+
+# Kill stuck process
+ps aux | grep "setup:upgrade"
+sudo kill -9 [PID]
+
+# Clean and retry
+rm -rf generated/* var/di/* var/generation/* var/cache/*
+php bin/magento cache:flush
+php -d memory_limit=8G bin/magento setup:upgrade --safe-mode --no-interaction
+
+Static Content Deployment
+
+11. Deploy Static Content
+# Deploy with compact strategy
+php bin/magento setup:static-content:deploy -f --strategy=compact nl_NL
+
+# Deploy with standard strategy
+php bin/magento setup:static-content:deploy -f --strategy=standard nl_NL
+
+# Deploy all locales
+php bin/magento setup:static-content:deploy -f --strategy=compact en_US en_GB de_DE fr_FR es_ES nl_NL
+
+# Deploy specific theme only
+php bin/magento setup:static-content:deploy -f --strategy=compact --theme=Smartwave/indeshop nl_NL
+
+# Deploy with multiple jobs
+php bin/magento setup:static-content:deploy -f --strategy=compact --jobs=4 nl_NL
+
+
+12.  Fix LESS Compilation Errors
+# Deploy with compact strategy
+php bin/magento setup:static-content:deploy -f --strategy=compact nl_NL
+
+# Deploy with standard strategy
+php bin/magento setup:static-content:deploy -f --strategy=standard nl_NL
+
+# Deploy all locales
+php bin/magento setup:static-content:deploy -f --strategy=compact en_US en_GB de_DE fr_FR es_ES nl_NL
+
+# Deploy specific theme only
+php bin/magento setup:static-content:deploy -f --strategy=compact --theme=Smartwave/indeshop nl_NL
+
+# Deploy with multiple jobs
+php bin/magento setup:static-content:deploy -f --strategy=compact --jobs=4 nl_NL
+
+Module Management
+
+13. Disable Problematic Modules
+# Disable specific modules
+php bin/magento module:disable Module_Name --force
+
+# Disable all Amasty modules
+php bin/magento module:disable Amasty_CheckoutStyleSwitcher Amasty_Checkout Amasty_CheckoutCore Amasty_CheckoutDeliveryDate Amasty_CheckoutProPackage Amasty_OneStepCheckoutProSubscriptionPackage --force
+
+# Check module status
+php bin/magento module:status
+
+# Re-enable modules
+php bin/magento module:enable Module_Name
+
+# Disable all Amasty modules
+php bin/magento module:disable Amasty_CheckoutStyleSwitcher Amasty_Checkout Amasty_CheckoutCore Amasty_CheckoutDeliveryDate Amasty_CheckoutProPackage Amasty_OneStepCheckoutProSubscriptionPackage --force
+
+# Check module status
+php bin/magento module:status
+
+# Re-enable modules
+php bin/magento module:enable Module_Name
+
+14.  Fix Amasty Module Issues
+# Remove problematic CSS
+rm -rf app/code/Amasty/Base/view/frontend/web/css
+
+# Or rename module temporarily
+mv app/code/Amasty/CheckoutDeliveryDate app/code/Amasty_CheckoutDeliveryDate.disabled
+
+Post-Upgrade Commands
+15. Compile and Reindex
+
+# Remove generated files
+rm -rf generated/* var/di/* var/generation/*
+
+# Compile
+php -d memory_limit=8G bin/magento setup:di:compile
+
+# Reindex all
+php bin/magento indexer:reindex
+
+# Reindex specific
+php bin/magento indexer:reindex catalog_product_price catalog_product_category
+
+16. Clear Cache
+bash
+php bin/magento cache:clean
+php bin/magento cache:flush
+
+17. Disable Maintenance Mode
+bash
+php bin/magento maintenance:disable
+
+Verification Commands
+18. Check Upgrade Status
+bash
+# Check version
+php bin/magento --version
+
+# Check module status
+php bin/magento module:status
+# Check indexer status
+php bin/magento indexer:status
+
+# Check cache status
+php bin/magento cache:status
+
+# Check system status
+php bin/magento info:status
+
+# Check OpenSearch
+php bin/magento info:opensearch:ping
+
+19. Test Store
+bash
+# Check frontend
+curl -I http://localhost:8080/
+
+# Check admin
+curl -I http://localhost:8080/admin
+
+# Check logs
+tail -100 var/log/system.log
+tail -100 var/log/exception.log
+
+20. Security Audit
+bash
+# Check security advisories
+composer audit
+
+# Fix security issues
+composer audit --fix
+
+Emergency/Rollback Commands
+21. Rollback
+bash
+# Restore composer files
+cp composer.json.backup composer.json
+cp composer.lock.backup composer.lock
+
+# Restore database
+mysql -u [username] -p[password] [database] < db_backup.sql
+
+# Restore code
+tar -xzf magento_core_backup_*.tar.gz
+
+# Reinstall
+php bin/magento setup:install ...
+
+
+22. Clean Reset
+bash
+# Complete cleanup
+sudo killall -9 php 2>/dev/null
+rm -rf generated/* var/di/* var/generation/* var/cache/* var/page_cache/*
+php bin/magento cache:flush
+php bin/magento maintenance:disable
+mysql -u [username] -p -e "DELETE FROM [database].flag WHERE flag_code LIKE '%lock%' OR flag_code LIKE '%setup%';"
+
+
+Quick Reference - One-Line Commands
+bash
+# Full upgrade in one line (after backup)
+php bin/magento maintenance:enable && \
+composer require-commerce magento/product-community-edition 2.4.8-p5 --no-update && \
+composer update --with-all-dependencies && \
+rm -rf generated/* var/di/* var/generation/* && \
+php -d memory_limit=8G bin/magento setup:upgrade --safe-mode --no-interaction && \
+php bin/magento setup:static-content:deploy -f --strategy=compact en_US && \
+php -d memory_limit=4G bin/magento setup:di:compile && \
+php bin/magento indexer:reindex && \
+php bin/magento cache:clean && \
+php bin/magento maintenance:disable && \
+php bin/magento --version
